@@ -1,5 +1,5 @@
 # ec2自動停止function
-- EC2インスタンスに、autostop: false とタグ付けされていない場合は、タイマーで自動停止させる
+- EC2インスタンスに、autostop: false とタグ付けされていない場合は、Cloudwatch eventsから自動停止させる
 - 開発はSAMを使っている
 
 ## samを使った、開発からデプロイまでの手順
