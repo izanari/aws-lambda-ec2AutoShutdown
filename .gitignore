@@ -1,2 +1,4 @@
 output.yml
 tests/
+.aws-sam/
+

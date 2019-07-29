@@ -17,6 +17,41 @@ sam init -r python3.7 -n ec2_auto_shutdown
 ```
 sam local generate-event cloudwatch scheduled-event > event.json
 ```
+
+### samのテンプレートファイルの一部を修正します
+- template.yaml 修正前
+```
+            CodeUri: hello_world/
+            Handler: app.lambda_handler
+```
+
+- template.yaml 修正後
+```
+            CodeUri: src/
+            Handler: lambda_function.lambda_handler
+```
+- これを修正しないと、samコマンドがlambda関数ファイルを認識しません。残りの修正は後でします。
+- `template.yml` じゃなく、`template.yaml`ですよ。
+
+
+### ビルドします
+```
+sam build -t template.yaml --profile hoge
+--region ap-northeast-1
+```
+ビルドが成功すると、画面に以下のように表示されます
+```
+Build Succeeded
+
+Built Artifacts  : .aws-sam/build
+Built Template   : .aws-sam/build/template.yaml
+
+Commands you can use next
+=========================
+[*] Invoke Function: sam local invoke
+[*] Package: sam package --s3-bucket <yourbucket>
+```
+
 #### ここまでくるとこのようなファイル構成になってます
 ```
 ec2_auto_shutdown
@@ -42,21 +77,6 @@ ec2_auto_shutdown
         └── test_handler.py
 ```
 
-### samのテンプレートファイルの一部を修正します
-- template.yaml 修正前
-```
-            CodeUri: hello_world/
-            Handler: app.lambda_handler
-```
-
-- template.yaml 修正後
-```
-            CodeUri: src/
-            Handler: lambda_function.lambda_handler
-```
-- これを修正しないと、samコマンドがlambda関数ファイルを認識しません。残りの修正は後でします。
-- `template.yml` じゃなく、`template.yaml`ですよ。
-
 ### ローカル環境でテストします
 ```
 sam local invoke --profile hoge -e event.json --region ap-northeast-1
@@ -68,23 +88,7 @@ sam local invoke --profile hoge -e event.json --region ap-northeast-1
 sam validate -t template.yaml --profile hoge
 --region ap-northeast-1
 ```
-### ビルドします
-```
-sam build -t template.yaml --profile hoge
---region ap-northeast-1
-```
-ビルドが成功すると、画面に以下のように表示されます
-```
-Build Succeeded
 
-Built Artifacts  : .aws-sam/build
-Built Template   : .aws-sam/build/template.yaml
-
-Commands you can use next
-=========================
-[*] Invoke Function: sam local invoke
-[*] Package: sam package --s3-bucket <yourbucket>
-```
 ### S3へアップロードします
 ```
 sam package --s3-bucket mybucket --output-template output.yml --profile hoge
@@ -92,7 +96,7 @@ sam package --s3-bucket mybucket --output-template output.yml --profile hoge
 - 正常に終了すると、ソースコードの場所が編集された`output.yml`が生成されます
 ### CloudFormationでデプロイします
 ```
-aws cloudformation deploy --template-file output.yml --stack-name lambda-ec2-auto-shutdown  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+aws cloudformation deploy --template-file output.yml --stack-name lambda-ec2-auto-shutdown  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --profile hogehoge
 ```
 - 成功時にはこのような表示がされます
 ```
